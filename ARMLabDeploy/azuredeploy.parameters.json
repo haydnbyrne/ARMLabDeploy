@@ -1,0 +1,24 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "siteName": {
+      "value": "SITE1"
+    },
+    "vnetAddressPrefix": {
+      "value": "172.21.0.0/16"
+    },
+    "subnet1Prefix": {
+      "value": "172.21.0.0/24"
+    },
+    "subnet2Prefix": {
+      "value": "172.21.1.0/24"
+    },
+    "vm1Name": {
+      "value": "VM1"
+    },
+    "vm1AdminUserName": {
+      "value": "haydn"
+    }
+  }
+}
