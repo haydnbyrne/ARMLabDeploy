@@ -3,7 +3,7 @@
   "contentVersion": "1.0.0.0",
   "parameters": {
     "siteName": {
-      "value": "SITE1"
+      "value": "JUNKARMTST1"
     },
     "vnetAddressPrefix": {
       "value": "172.21.0.0/16"
@@ -14,10 +14,10 @@
     "subnet2Prefix": {
       "value": "172.21.1.0/24"
     },
-    "vm1Name": {
-      "value": "VM1"
+    "VMName": {
+      "value": "JUNKARMTST1"
     },
-    "vm1AdminUserName": {
+    "VMAdminUserName": {
       "value": "haydn"
     }
   }
