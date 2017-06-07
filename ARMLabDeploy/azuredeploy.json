@@ -53,8 +53,11 @@
       ]
     },
     "VMName": {
-      "type": "string",
-      "minLength": 1
+      "type": "array",
+      "defaultValue": [
+        "ADDS1",
+        "FILE1"
+      ]
     },
     "VMAdminUserName": {
       "type": "string",
@@ -65,12 +68,20 @@
     },
     "VMWindowsOSVersion": {
       "type": "string",
-      "defaultValue": "2012-R2-Datacenter",
+      "defaultValue": "2016-Datacenter-smalldisk",
       "allowedValues": [
         "2008-R2-SP1",
+        "2008-R2-SP1-smalldisk",
         "2012-Datacenter",
+        "2012-Datacenter-smalldisk",
         "2012-R2-Datacenter",
-        "Windows-Server-Technical-Preview"
+        "2012-R2-Datacenter-smalldisk",
+        "2016-Datacenter",
+        "2016-Datacenter-Server-Core",
+        "2016-Datacenter-Server-Core-smalldisk",
+        "2016-Datacenter-smalldisk",
+        "2016-Datacenter-with-Containers",
+        "2016-Nano-Server"
       ]
     }
   },
@@ -84,8 +95,7 @@
     "VMVmSize": "Standard_A1",
     "VMVnetID": "[resourceId('Microsoft.Network/virtualNetworks', variables('vnetName'))]",
     "VMSubnetRef": "[concat(variables('VMVnetID'), '/subnets/', parameters('subnet2Name'))]",
-    "VMStorageAccountContainerName": "vhds",
-    "VMNicName": "[concat(parameters('VMName'), 'NetworkInterface')]"
+    "VMStorageAccountContainerName": "vhds"
   },
     "resources": [
       {
@@ -130,7 +140,7 @@
         "kind": "Storage"
       },
       {
-        "name": "[variables('VMNicName')]",
+        "name": "[concat(parameters('VMName')[copyIndex()], 'NetworkInterface')]",
         "type": "Microsoft.Network/networkInterfaces",
         "location": "[resourceGroup().location]",
         "apiVersion": "2016-03-30",
@@ -138,7 +148,7 @@
           "[resourceId('Microsoft.Network/virtualNetworks', variables('vnetName'))]"
         ],
         "tags": {
-          "displayName": "VMNic"
+          "displayName": "[concat(parameters('VMName')[copyIndex()], 'NetworkInterface')]"
         },
         "properties": {
           "ipConfigurations": [
@@ -152,16 +162,20 @@
               }
             }
           ]
+        },
+        "copy": {
+          "name": "vmniccopy",
+          "count": "[length(parameters('VMName'))]"
         }
       },
       {
-        "name": "[parameters('VMName')]",
+        "name": "[parameters('VMName')[copyIndex()]]",
         "type": "Microsoft.Compute/virtualMachines",
         "location": "[resourceGroup().location]",
         "apiVersion": "2015-06-15",
         "dependsOn": [
           "[resourceId('Microsoft.Storage/storageAccounts', variables('StorageName'))]",
-          "[resourceId('Microsoft.Network/networkInterfaces', variables('VMNicName'))]"
+          "[resourceId('Microsoft.Network/networkInterfaces', concat(parameters('VMName')[copyIndex()], 'NetworkInterface'))]"
         ],
         "tags": {
           "displayName": "VM",
@@ -170,9 +184,9 @@
         "properties": {
           "hardwareProfile": {
             "vmSize": "[variables('VMVmSize')]"
-          },  
+          },
           "osProfile": {
-            "computerName": "[parameters('VMName')]",
+            "computerName": "[parameters('VMName')[copyIndex()]]",
             "adminUsername": "[parameters('VMAdminUsername')]",
             "adminPassword": "[parameters('VMAdminPassword')]"
           },
@@ -184,9 +198,9 @@
               "version": "latest"
             },
             "osDisk": {
-              "name": "VMOSDisk",
+              "name": "[concat(parameters('VMName')[copyIndex()],'VMOSDisk')]",
               "vhd": {
-                "uri": "[concat(reference(resourceId('Microsoft.Storage/storageAccounts', variables('StorageName')), '2016-01-01').primaryEndpoints.blob, variables('VMStorageAccountContainerName'), '/', variables('VMOSDiskName'), '.vhd')]"
+                "uri": "[concat(reference(resourceId('Microsoft.Storage/storageAccounts', variables('StorageName')), '2016-01-01').primaryEndpoints.blob, variables('VMStorageAccountContainerName'), '/', parameters('VMName')[copyIndex()], variables('VMOSDiskName'), '.vhd')]"
               },
               "caching": "ReadWrite",
               "createOption": "FromImage"
@@ -195,10 +209,14 @@
           "networkProfile": {
             "networkInterfaces": [
               {
-                "id": "[resourceId('Microsoft.Network/networkInterfaces', variables('VMNicName'))]"
+                "id": "[resourceId('Microsoft.Network/networkInterfaces', concat(parameters('VMName')[copyIndex()], 'NetworkInterface'))]"
               }
             ]
           }
+        },
+        "copy": {
+          "name": "vmcopy",
+          "count": "[length(parameters('VMName'))]"
         }
       }
     ]

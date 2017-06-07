@@ -3,7 +3,7 @@
   "contentVersion": "1.0.0.0",
   "parameters": {
     "siteName": {
-      "value": "JUNKARMTST1"
+      "value": "JUNKDELETE"
     },
     "vnetAddressPrefix": {
       "value": "172.21.0.0/16"
@@ -14,11 +14,14 @@
     "subnet2Prefix": {
       "value": "172.21.1.0/24"
     },
-    "VMName": {
-      "value": "JUNKARMTST1"
-    },
     "VMAdminUserName": {
       "value": "haydn"
+    },
+    "VMName": {
+      "value": [
+        "JUNKADDS1",
+        "JUNKFILE1"
+      ]
     }
   }
 }
